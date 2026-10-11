@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-const children = ['server', 'client'].map(workspace => spawn(
+const children = ['Backend', 'Frontend'].map(workspace => spawn(
   npm,
   ['run', 'dev', '--workspace', workspace],
   { stdio: 'inherit', shell: process.platform === 'win32' }

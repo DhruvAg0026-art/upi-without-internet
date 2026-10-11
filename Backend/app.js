@@ -1,11 +1,15 @@
 import cors from 'cors';
 import express from 'express';
 import { randomUUID, createHash } from 'node:crypto';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Account, Transaction } from './models.js';
 import { encryptInstruction, publicKeyBase64 } from './crypto.js';
 import { parseAmountToPaise, paiseToRupees } from './amount.js';
 import { clearClaims, getClaimCount } from './idempotency.js';
 import { ingestPacket } from './ingestion.js';
+
+const clientDistPath = resolve(dirname(fileURLToPath(import.meta.url)), '../Frontend/dist');
 
 function accountDto(account) {
   return {
@@ -148,6 +152,18 @@ export function createApp({ keys, mesh }) {
       next(error);
     }
   });
+
+  if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(clientDistPath));
+    app.use((request, response, next) => {
+      if (request.method !== 'GET' || request.path === '/api' || request.path.startsWith('/api/')) {
+        return next();
+      }
+      response.sendFile(resolve(clientDistPath, 'index.html'), error => {
+        if (error) next(error);
+      });
+    });
+  }
 
   app.use((error, _request, response, _next) => {
     console.error(error);
