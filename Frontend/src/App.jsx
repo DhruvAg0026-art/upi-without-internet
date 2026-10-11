@@ -26,6 +26,8 @@ const initialAccounts = [
   { vpa: 'dave@demo', holderName: 'Dave', balance: 500 }
 ];
 
+const apiBaseUrl = (import.meta.env.VITE_API_URL ?? '').replace(/\/+$/, '');
+
 const formatRupees = value => new Intl.NumberFormat('en-IN', {
   style: 'currency',
   currency: 'INR',
@@ -33,7 +35,7 @@ const formatRupees = value => new Intl.NumberFormat('en-IN', {
 }).format(value);
 
 async function request(path, options) {
-  const response = await fetch(path, {
+  const response = await fetch(`${apiBaseUrl}${path}`, {
     ...options,
     headers: { 'Content-Type': 'application/json', ...options?.headers }
   });

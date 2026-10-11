@@ -77,26 +77,44 @@ Open <http://localhost:5173>. The React app runs on port `5173`; Vite proxies `/
 
 To use MongoDB Atlas instead, put its replica-set URI in `.env` as `MONGODB_URI` and skip `docker compose up -d`. Keep credentials private and never commit `.env`.
 
-## Deploy to Render
+## Deploy frontend to Vercel and backend to Render
 
-This repository includes a Dockerfile that builds and serves the frontend and API together.
+The frontend is deployed separately from the API. Deploy the backend first so you can use its public URL when configuring Vercel.
 
-1. Push the repository to GitHub and create a **Web Service** in Render from that repository.
-2. Select **Docker** as the runtime and use the repository-root `Dockerfile`.
-3. Add these environment variables in the Render service settings:
+### 1. Deploy the backend to Render
+
+1. In Render, create a **Web Service** and connect this GitHub repository.
+2. Set **Root Directory** to `Backend`.
+3. Select the **Node** runtime. Use `npm install` as the build command and `npm start` as the start command.
+4. Add these environment variables:
 
    | Variable | Value |
    | --- | --- |
-   | `MONGODB_URI` | MongoDB Atlas URI for a replica set |
-   | `WEB_ORIGIN` | Your Render URL, for example `https://your-service.onrender.com` |
-   | `NODE_ENV` | `production` |
+   | `MONGODB_URI` | MongoDB Atlas replica-set connection URI |
+   | `WEB_ORIGIN` | Your Vercel production URL, e.g. `https://your-project.vercel.app` |
 
-   Render provides `PORT` to the service; the app uses it automatically.
+   Render supplies `PORT` automatically. If you add a Vercel custom domain, update `WEB_ORIGIN` to that exact origin and redeploy the backend.
 
-4. Configure Atlas network access and database credentials for the deployed service.
-5. After deployment, open `https://your-service.onrender.com/api/health`. A healthy API responds with `{"status":"ok"}`.
+5. Configure the Atlas database user and network access. After Render finishes deploying, verify `https://YOUR-API.onrender.com/api/health` returns `{"status":"ok"}`.
 
-Do not put database credentials in source code, GitHub, or a committed `.env` file. Configure them only in Render's environment settings.
+### 2. Deploy the frontend to Vercel
+
+1. In Vercel, import the same GitHub repository as a new project.
+2. Set **Root Directory** to `Frontend` and confirm it as the project root.
+3. Use the Vite defaults: build command `npm run build`, output directory `dist`, install command `npm install`.
+4. Add this environment variable in Vercel's project settings:
+
+   | Variable | Value |
+   | --- | --- |
+   | `VITE_API_URL` | Your Render API origin, e.g. `https://YOUR-API.onrender.com` |
+
+5. Deploy (or redeploy after adding the variable). Open the Vercel URL and check that the dashboard loads data.
+
+`VITE_API_URL` is included in the public frontend bundle, so it must contain only the API URL—not secrets. Do not add `MONGODB_URI` to Vercel. Put database credentials only in Render's environment settings, never in GitHub or a committed `.env` file.
+
+### Optional: deploy the combined Docker app
+
+The root [`Dockerfile`](./Dockerfile) is for running the frontend and backend together on a Docker host. It is not needed for the split Vercel + Render setup above.
 
 ## Verify
 
