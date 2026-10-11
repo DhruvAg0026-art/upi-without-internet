@@ -1,10 +1,10 @@
 FROM node:20-alpine AS build
 
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package.json ./
 COPY Frontend/package.json ./Frontend/package.json
 COPY Backend/package.json ./Backend/package.json
-RUN npm ci
+RUN npm install
 
 COPY Frontend ./Frontend
 COPY Backend ./Backend
@@ -15,10 +15,10 @@ FROM node:20-alpine AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY package.json ./
 COPY Frontend/package.json ./Frontend/package.json
 COPY Backend/package.json ./Backend/package.json
-RUN npm ci --omit=dev --workspace Backend --include-workspace-root=false
+RUN npm install --omit=dev --workspace Backend --include-workspace-root=false
 
 COPY Backend ./Backend
 COPY --from=build /app/Frontend/dist /app/Frontend/dist
