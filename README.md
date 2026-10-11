@@ -18,6 +18,8 @@ React dashboard · Express API · MongoDB · Hybrid encryption
 > [!WARNING]
 > **Educational demo only.** This is not connected to UPI, a bank, or NPCI. Do not use it for real payments or deploy it as a public payment service.
 
+**Live frontend:** [upi-without-internet-ashy.vercel.app](https://upi-without-internet-ashy.vercel.app/)
+
 ## What is this?
 
 UPI Offline Mesh is a full-stack demo that shows how an encrypted payment instruction could travel between simulated phones while offline, then reach a simulated bridge device and settle when connectivity is available.
@@ -91,7 +93,7 @@ The frontend is deployed separately from the API. Deploy the backend first so yo
    | Variable | Value |
    | --- | --- |
    | `MONGODB_URI` | MongoDB Atlas replica-set connection URI |
-   | `WEB_ORIGIN` | Your Vercel production URL, e.g. `https://your-project.vercel.app` |
+   | `WEB_ORIGIN` | `https://upi-without-internet-ashy.vercel.app` |
 
    Render supplies `PORT` automatically. If you add a Vercel custom domain, update `WEB_ORIGIN` to that exact origin and redeploy the backend.
 
@@ -106,9 +108,9 @@ The frontend is deployed separately from the API. Deploy the backend first so yo
 
    | Variable | Value |
    | --- | --- |
-   | `VITE_API_URL` | Your Render API origin, e.g. `https://YOUR-API.onrender.com` |
+   | `VITE_API_URL` | `https://upi-without-internet-tvb5.onrender.com` |
 
-5. Deploy (or redeploy after adding the variable). Open the Vercel URL and check that the dashboard loads data.
+5. Deploy (or redeploy after adding the variable). Open [the live frontend](https://upi-without-internet-ashy.vercel.app/) and check that the dashboard loads data.
 
 `VITE_API_URL` is included in the public frontend bundle, so it must contain only the API URL—not secrets. Do not add `MONGODB_URI` to Vercel. Put database credentials only in Render's environment settings, never in GitHub or a committed `.env` file.
 
